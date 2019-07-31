@@ -60,7 +60,7 @@ func (tc *TFJobController) updateTFJob(old, cur interface{}) {
 func (tc *TFJobController) deletePodsAndServices(tfJob *tfv1alpha2.TFJob, pods []*v1.Pod) error {
 	startTime := time.Now()
 	defer func() {
-		log.Infof("Finished deletePodsAndServices %q (%v)", tfjob.Name, time.Since(startTime))
+		log.Infof("Finished deletePodsAndServices %q (%v)", tfJob.Name, time.Since(startTime))
 	}()
 	if len(pods) == 0 {
 		return nil
