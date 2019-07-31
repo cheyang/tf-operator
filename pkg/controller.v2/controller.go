@@ -382,7 +382,7 @@ func (tc *TFJobController) syncTFJob(key string) (bool, error) {
 // It will requeue the tfjob in case of an error while creating/deleting pods/services.
 func (tc *TFJobController) reconcileTFJobs(tfjob *tfv1alpha2.TFJob) error {
 	startTime := time.Now()
-	oldTfjob := tfjob.DeepCopy()
+	// oldTfjob := tfjob.DeepCopy()
 	defer func() {
 		log.Infof("Finished Reconcile TFJobs %q (%v)", tfjob.Name, time.Since(startTime))
 	}()
