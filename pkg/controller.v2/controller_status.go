@@ -25,7 +25,7 @@ import (
 
 	tfv1alpha2 "github.com/kubeflow/tf-operator/pkg/apis/tensorflow/v1alpha2"
 	"github.com/kubeflow/tf-operator/pkg/generator"
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
