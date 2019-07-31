@@ -18,12 +18,14 @@ package controller
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	tfv1alpha2 "github.com/kubeflow/tf-operator/pkg/apis/tensorflow/v1alpha2"
 	"github.com/kubeflow/tf-operator/pkg/generator"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -348,6 +350,10 @@ func initReplicasStatusesNum(status map[string]int) {
 
 // updateTFJobStatus updates the status of the given TFJob.
 func (tc *TFJobController) updateTFJobStatus(tfjob *tfv1alpha2.TFJob) error {
+	startTime := time.Now()
+	defer func() {
+		log.Infof("updateTFJobStatus %q (%v)", tfjob.Name, time.Since(startTime))
+	}()
 	_, err := tc.tfJobClientSet.KubeflowV1alpha2().TFJobs(tfjob.Namespace).Update(tfjob)
 	return err
 }

@@ -17,6 +17,7 @@ package controller
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -380,6 +381,11 @@ func (tc *TFJobController) syncTFJob(key string) (bool, error) {
 // reconcileTFJobs checks and updates replicas for each given TFReplicaSpec.
 // It will requeue the tfjob in case of an error while creating/deleting pods/services.
 func (tc *TFJobController) reconcileTFJobs(tfjob *tfv1alpha2.TFJob) error {
+	startTime := time.Now()
+	// oldTfjob := tfjob.DeepCopy()
+	defer func() {
+		log.Infof("Finished Reconcile TFJobs %q (%v)", tfjob.Name, time.Since(startTime))
+	}()
 	log.Infof("Reconcile TFJobs %s", tfjob.Name)
 
 	pods, err := tc.getPodsForTFJob(tfjob)
@@ -401,10 +407,19 @@ func (tc *TFJobController) reconcileTFJobs(tfjob *tfv1alpha2.TFJob) error {
 		if err := tc.deletePodsAndServices(tfjob, pods); err != nil {
 			return err
 		}
+		oldStatus := tfjob.Status.DeepCopy()
 		// Initialize the status.
 		initializeTFReplicaStatuses(tfjob, tfv1alpha2.TFReplicaTypeWorker)
 		initializeTFReplicaStatuses(tfjob, tfv1alpha2.TFReplicaTypePS)
 		initializeTFReplicaStatuses(tfjob, tfv1alpha2.TFReplicaTypeChief)
+		if reflect.DeepEqual(*oldStatus, tfjob.Status) {
+			log.Infof("No need to update the equal old status %+v and current status %+v", oldStatus, tfjob.Status)
+			return nil
+		} else {
+			log.Infof("have to update the no equal old status %+v and current status %+v", oldStatus, tfjob.Status)
+		}
+
+		// if reflect.
 		return tc.updateStatusHandler(tfjob)
 	}
 
