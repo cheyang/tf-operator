@@ -380,6 +380,10 @@ func (tc *TFJobController) syncTFJob(key string) (bool, error) {
 // reconcileTFJobs checks and updates replicas for each given TFReplicaSpec.
 // It will requeue the tfjob in case of an error while creating/deleting pods/services.
 func (tc *TFJobController) reconcileTFJobs(tfjob *tfv1alpha2.TFJob) error {
+	startTime := time.Now()
+	defer func() {
+		log.Infof("Finished Reconcile TFJobs %q (%v)", tfjob.Name, time.Since(startTime))
+	}()
 	log.Infof("Reconcile TFJobs %s", tfjob.Name)
 
 	pods, err := tc.getPodsForTFJob(tfjob)
